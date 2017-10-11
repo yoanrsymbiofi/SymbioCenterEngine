@@ -87,7 +87,7 @@
                     username: $('#usernameDriver').val(),
                     password: $('#passwordDriver').val()
                 }).done(function (result) {
-                    socketDriver = io.connect('http://145.239.9.200:9000', {
+                    socketDriver = io.connect('http://145.239.9.200:8080', {
                         query: 'token=' + result.token
                     });
                     socketDriver.on('connect', function () {
@@ -112,7 +112,7 @@
                     username: $('#usernameWeb').val(),
                     password: $('#passwordWeb').val()
                 }).done(function (result) {
-                    socketWeb = io.connect('http://145.239.9.200:9000', {
+                    socketWeb = io.connect('http://145.239.9.200:8080', {
                         query: 'token=' + result.token
                     });
                     socketWeb.on('connect', function () {
