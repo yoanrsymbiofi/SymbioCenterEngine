@@ -9,53 +9,63 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
     </head>
     <body>
+
+        <div class="jumbotron">
+            <div class="container">
+                <h1 class="display-3">SymbioCenter</h1>
+                <p>Cette application est une démonstration de faisabilité dont l'objectif est d'envoyer un signal au serveur depuis le <strong>driver</strong> d'un utilisateur, de traiter ce signal via un programme C++ sur le serveur, d'enregistrer le résultat en base MonogoDb et de le renvoyer au <strong>navigateur</strong> de ce même utilisateur. Pour cela, sont utilisés les web sockets avec nodejs, express et socket.io et une authentification utilisant les <a href="https://auth0.com/blog/auth-with-socket-io/" target=""_blank">tokens</a> .</p>
+            </div>
+        </div>
         <div class="container">
-            <div class="row justify-content-md-center">
-                <h1><%= title %></h1>
-            </div>
-            <hr>
-            <div class="row justify-content-md-center">
-                <div class="col col-md-4">
-                    <input type="text" style="font-size: 20px;width: 200px;text-align: center;" id="signal-received1" value="">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="row">
+                        <div class="col-md-1">
+                            <span id="socketDriverConnexion" style="top:8px;position:absolute;border-radius:12px;background:red;width:24px;height:24px"></span>
+                        </div>
+                        <div class="col-md-7">
+                            <h2>SymbioCenterDriver</h2>
+                        </div>
+                    </div>
+                    <p>
+                    <h4>Connexion</h4>
+                    <form class="form" id="loginDriver">
+                        <input type="text" id="usernameDriver" placeholder="Email"/>
+                        <input type="password" id="passwordDriver"  placeholder="Mot de passe"/><br>
+                        <input type="submit" class="btn btn-primary" value="Login"/>
+                        <input type="button" class="btn btn-danger" id="logoutDriver" value="Logout"/>
+                    </form>
+                    </p>
+                    <p>
+                    <h4>Envoyer un signal</h4>
+                    <form class="form" id="sendSignal">
+                        <input type="text" id="signal" value="51566468"/>
+                        <input type="submit"  class="btn btn-primary" value="Envoyer"/>
+                    </form>
+                    </p>
                 </div>
-                <div class="col col-md-8">
-                    <div id="biofeedbacks1"></div>
-                </div>
-            </div>
-            <hr>
-            <div class="row justify-content-md-center">
-                <div class="col col-md-4">
-                    <input type="text" style="font-size: 20px;width: 200px;text-align: center;" id="signal-received2" value="">
-                </div>
-                <div class="col col-md-8">
-                    <div id="biofeedbacks2"></div>
-                </div>
-            </div>
-            <hr>
-            <div class="row justify-content-md-center">
-                <div class="col col-md-4">
-                    <input type="text" style="font-size: 20px;width: 200px;text-align: center;" id="signal-received3" value="">
-                </div>
-                <div class="col col-md-8">
-                    <div id="biofeedbacks3"></div>
-                </div>
-            </div>
-            <hr>
-            <div class="row justify-content-md-center">
-                <div class="col col-md-4">
-                    <input type="text" style="font-size: 20px;width: 200px;text-align: center;" id="signal-received4" value="">
-                </div>
-                <div class="col col-md-8">
-                    <div id="biofeedbacks4"></div>
-                </div>
-            </div>
-            <hr>
-            <div class="row justify-content-md-center">
-                <div class="col col-md-4">
-                    <input type="text" style="font-size: 20px;width: 200px;text-align: center;" id="signal-received5" value="">
-                </div>
-                <div class="col col-md-8">
-                    <div id="biofeedbacks5"></div>
+                <div class="col-md-6">
+                    <div class="row">
+                        <div class="col-md-1">
+                            <span id="socketWebConnexion" style="top:8px;position:absolute;border-radius:12px;background:red;width:24px;height:24px"></span>
+                        </div>
+                        <div class="col-md-7">
+                            <h2>SymbioCenterWeb</h2>
+                        </div>
+                    </div>
+                    <p>
+                    <h4>Connexion</h4>
+                    <form class="form" id="loginWeb">
+                        <input type="text" id="usernameWeb" placeholder="Email"/>
+                        <input type="password" id="passwordWeb"  placeholder="Mot de passe"/><br>
+                        <input type="submit" class="btn btn-primary" value="Login"/>
+                        <input type="button" class="btn btn-danger" id="logoutWeb" value="Logout"/>
+                    </form>
+                    </p>
+                    <h4>Signaux reçus</h4>
+                    <div id="Web1SignauxRecus">
+
+                    </div>
                 </div>
             </div>
         </div>
@@ -67,61 +77,59 @@
         <script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
 
         <script type="text/javascript">
-            var socket1 = io.connect('http://145.239.9.200:8080',{query: 'email=yoanr1@symbiofi.com'});
-            socket1.on('signal-received', function (signal) {
-                $("#signal-received1").val(signal);
-            });
-            
-            var socket2 = io.connect('http://145.239.9.200:8080',{query: 'email=yoanr2@symbiofi.com'});
-            socket2.on('signal-received', function (signal) {
-                $("#signal-received2").val(signal);
-            });
-            
-            var socket3 = io.connect('http://145.239.9.200:8080',{query: 'email=yoanr3@symbiofi.com'});
-            socket3.on('signal-received', function (signal) {
-                $("#signal-received3").val(signal);
-            });
-            
-            var socket4 = io.connect('http://145.239.9.200:8080',{query: 'email=yoanr4@symbiofi.com'});
-            socket4.on('signal-received', function (signal) {
-                $("#signal-received4").val(signal);
-            });
-            
-            var socket5 = io.connect('http://145.239.9.200:8080',{query: 'email=yoanr5@symbiofi.com'});
-            socket5.on('signal-received', function (signal) {
-                $("#signal-received5").val(signal);
-            });
-            
-            socket1.on('last-biofeedbacks', function (lastBiofeedbacks) {
-                $("#biofeedbacks1").html(getHtml(lastBiofeedbacks));
-            });
-            socket2.on('last-biofeedbacks', function (lastBiofeedbacks) {
-                $("#biofeedbacks2").html(getHtml(lastBiofeedbacks));
-            });
-            socket3.on('last-biofeedbacks', function (lastBiofeedbacks) {
-                $("#biofeedbacks3").html(getHtml(lastBiofeedbacks));
-            });
-            socket4.on('last-biofeedbacks', function (lastBiofeedbacks) {
-                $("#biofeedbacks4").html(getHtml(lastBiofeedbacks));
-            });
-            socket5.on('last-biofeedbacks', function (lastBiofeedbacks) {
-                $("#biofeedbacks5").html(getHtml(lastBiofeedbacks));
-            });
-            
-            function getHtml(lastBiofeedbacks){
-                var html = "";
-                html += "<table class='table table-stripes'><thead><tr><th>Signal</th><th>Min</th><th>Max</th><th>Somme</th></tr></thead><tbody>"
-                lastBiofeedbacks.forEach(function (biofeedback) {
-                    html += "<tr>\n\
-                                                <td>" + biofeedback.signal + "</td>\n\
-                                                <td>" + biofeedback.min + "</td>\n\
-                                                <td>" + biofeedback.max + "</td>\n\
-                                                <td>" + biofeedback.sum + "</td>\n\
-                                                </tr>";
+
+            var socketDriver;
+            var socketWeb;
+
+            $('#loginDriver').submit(function (e) {
+                e.preventDefault();
+                $.get('/login', {
+                    username: $('#usernameDriver').val(),
+                    password: $('#passwordDriver').val()
+                }).done(function (result) {
+                    socketDriver = io.connect('http://145.239.9.200:9000', {
+                        query: 'token=' + result.token
+                    });
+                    socketDriver.on('connect', function () {
+                        $("#socketDriverConnexion").css('background', 'rgb(145,255,79)');
+                    }).on('disconnect', function () {
+                        $("#socketDriverConnexion").css('background', 'red');
+                    });
                 });
-                html += "</tbody></table>";
-                return html;
-            }
+            });
+            $('#logoutDriver').click(function (e) {
+                e.preventDefault();
+                socketDriver.disconnect();
+            });
+            $('#sendSignal').submit(function (e) {
+                e.preventDefault();
+                socketDriver.emit('signal', $('#signal').val());
+            });
+
+            $('#loginWeb').submit(function (e) {
+                e.preventDefault();
+                $.get('/login', {
+                    username: $('#usernameWeb').val(),
+                    password: $('#passwordWeb').val()
+                }).done(function (result) {
+                    socketWeb = io.connect('http://145.239.9.200:9000', {
+                        query: 'token=' + result.token
+                    });
+                    socketWeb.on('connect', function () {
+                        $("#socketWebConnexion").css('background', 'rgb(145,255,79)');
+                    }).on('disconnect', function () {
+                        $("#socketWebConnexion").css('background', 'red');
+                    });
+                    socketWeb.on('signal-received', function (cc) {
+                        $("#Web1SignauxRecus").html($("#Web1SignauxRecus").html() + "<div>" + cc.sum + "</div>");
+                    })
+                });
+            });
+            $('#logoutWeb').click(function (e) {
+                e.preventDefault();
+                socketWeb.disconnect();
+            });
+
         </script>
     </body>
 </html>

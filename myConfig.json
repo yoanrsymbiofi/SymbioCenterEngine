@@ -1,0 +1,11 @@
+{
+   "appId": "myAppId",
+   "masterKey": "myMasterKey",
+   "databaseURI": "mongodb://localhost/test",
+   "push": {
+      "android":{
+         "senderId": "your-sender-id",
+         "apiKey": "your-api-key-gcm"
+      }
+   }
+}
