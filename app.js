@@ -63,6 +63,6 @@ sio.sockets.on('connection', function (socket) {
 
 });
 
-server.listen(9000, function () {
-    console.log('listening on http://localhost:9000');
+server.listen(8080, function () {
+    console.log('listening on http://localhost:8080');
 });
