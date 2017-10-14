@@ -29,10 +29,10 @@
                     </div>
                     <p>
                     <h4>Connexion</h4>
-                    <form class="form" id="loginDriver">
-                        <input type="text" id="usernameDriver" placeholder="Email"/>
+                    <form class="form" >
+                        <input type="text" id="emailDriver" placeholder="Email"/>
                         <input type="password" id="passwordDriver"  placeholder="Mot de passe"/><br>
-                        <input type="submit" class="btn btn-primary" value="Login"/>
+                        <input type="button" class="btn btn-primary" id="loginDriver" value="Login"/>
                         <input type="button" class="btn btn-danger" id="logoutDriver" value="Logout"/>
                     </form>
                     </p>
@@ -55,10 +55,10 @@
                     </div>
                     <p>
                     <h4>Connexion</h4>
-                    <form class="form" id="loginWeb">
-                        <input type="text" id="usernameWeb" placeholder="Email"/>
+                    <form class="form">
+                        <input type="text" id="emailWeb" placeholder="Email"/>
                         <input type="password" id="passwordWeb"  placeholder="Mot de passe"/><br>
-                        <input type="submit" class="btn btn-primary" value="Login"/>
+                        <input type="button" class="btn btn-primary" id="loginWeb" value="Login"/>
                         <input type="button" class="btn btn-danger" id="logoutWeb" value="Logout"/>
                     </form>
                     </p>
@@ -79,24 +79,22 @@
         <script type="text/javascript">
 
             var socketDriver;
-            var socketWeb;
-
-            $('#loginDriver').submit(function (e) {
-                e.preventDefault();
-                $.get('/login', {
-                    username: $('#usernameDriver').val(),
-                    password: $('#passwordDriver').val()
-                }).done(function (result) {
-                    socketDriver = io.connect('http://145.239.9.200:8080', {
-                        query: 'token=' + result.token
-                    });
-                    socketDriver.on('connect', function () {
+            $('#loginDriver').click(function (e) {
+                socketDriver = io.connect('http://145.239.9.200:8080');
+                socketDriver.on('connect', function () {
+                    console.log("try to connect");
+                    socketDriver.emit('authentication', {username: $('#emailDriver').val(), password: $('#passwordDriver').val()});
+                    socketDriver.on('authenticated', function () {
                         $("#socketDriverConnexion").css('background', 'rgb(145,255,79)');
-                    }).on('disconnect', function () {
-                        $("#socketDriverConnexion").css('background', 'red');
                     });
+                    socketDriver.on('unauthorized', function (err) {
+                        console.log("There was an error with the authentication:", err.message);
+                    });
+                }).on('disconnect', function () {
+                    $("#socketDriverConnexion").css('background', 'red');
                 });
             });
+
             $('#logoutDriver').click(function (e) {
                 e.preventDefault();
                 socketDriver.disconnect();
@@ -106,25 +104,27 @@
                 socketDriver.emit('signal', $('#signal').val());
             });
 
-            $('#loginWeb').submit(function (e) {
-                e.preventDefault();
-                $.get('/login', {
-                    username: $('#usernameWeb').val(),
-                    password: $('#passwordWeb').val()
-                }).done(function (result) {
-                    socketWeb = io.connect('http://145.239.9.200:8080', {
-                        query: 'token=' + result.token
-                    });
-                    socketWeb.on('connect', function () {
+            var socketWeb;
+            $('#loginWeb').click(function (e) {
+                socketWeb = io.connect('http://145.239.9.200:8080');
+                socketWeb.on('connect', function () {
+                    console.log("try to connect");
+                    socketWeb.emit('authentication', {username: $('#emailWeb').val(), password: $('#passwordWeb').val()});
+                    socketWeb.on('authenticated', function () {
                         $("#socketWebConnexion").css('background', 'rgb(145,255,79)');
-                    }).on('disconnect', function () {
-                        $("#socketWebConnexion").css('background', 'red');
+                    });
+                    socketWeb.on('unauthorized', function (err) {
+                        console.log("There was an error with the authentication:", err.message);
                     });
                     socketWeb.on('signal-received', function (cc) {
                         $("#Web1SignauxRecus").html($("#Web1SignauxRecus").html() + "<div>" + cc.sum + "</div>");
                     })
+                }).on('disconnect', function () {
+                    $("#socketWebConnexion").css('background', 'red');
                 });
             });
+
+
             $('#logoutWeb').click(function (e) {
                 e.preventDefault();
                 socketWeb.disconnect();
