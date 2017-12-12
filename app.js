@@ -70,6 +70,7 @@ function disconnect(socket) {
 
 sio.sockets.on('connection', function (socket) {
     socket.on("signal", function (signal) {
+        console.log(socket.client.user.email + " send :" + signal);
         for (var i in userSockets[socket.client.user.email])
             if (sio.sockets.connected[userSockets[socket.client.user.email][i]] != undefined)
                 sio.sockets.connected[userSockets[socket.client.user.email][i]].emit('rr', signal);
