@@ -26,12 +26,13 @@
     function setTachoData() {
         console.log(rrList);
         $.ajax({
-            url: "expert/calc_cc",
+            url: "https://www.symbiocenter.com/expert/calc_cc",
+//            url: "calc_cc",
             data: {
                 rr_list: rrList
             },
             success: function (data) {
-                console.log("data "+data);
+                console.log("data " + data);
                 var jsonData = JSON.parse(data);
                 $("#maxBpm").html(jsonData.cc);
                 drawChartCC(jsonData.cc);

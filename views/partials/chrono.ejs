@@ -88,37 +88,38 @@
     }
 
     function startReception() {
-        socketDriver = io.connect('https://www.symbiocenter.com/expert');
-        socketDriver.on('connect', function () {
-            socketDriver.emit('authentication', {username: "yoanr@symbiofi.com"});
-            socketDriver.on('authenticated', function () {
-                console.log("authenticated !!!");
-            });
-            socketDriver.on('unauthorized', function (err) {
-                console.log("unauthorized");
-            });
-            socketDriver.on('rr', function (rr) {
-                var cc = Math.round(60000 / rr) + ' bpm';
-                $("#fc-live").html(cc);
-                if (rrList == "") {
-                    rrList = rr;
-                    ccList = cc;
-                } else {
-                    rrList = rrList + "," + rr;
-                    ccList = ccList + "," + cc;
-                }
-                if (rrList.split(","))
-                    var tab = rrList.split(",");
-                    var rrSum = 0;
-                for (i in tab) {
-                    rrSum += parseInt(tab[i]);
-                }
-                $("#fcmin-live").html("Min : " + (Math.round(60000 / Math.max.apply(null, tab))) + ' bpm');
-                $("#fcmax-live").html("Max : " + (Math.round(60000 / Math.min.apply(null, tab))) + ' bpm');
-                $("#fcmoy-live").html("Moy : " + Math.round(60000 / (rrSum / tab.length)) + ' bpm');
-
-                setTachoData();
-            });
+        socketDriver = io.connect('http://localhost:8080');
+        //PROD : 
+        socketDriver = io.connect('https://www.symbiocenter.com/expert/');
+//        socketDriver.on('connect', function () {
+        socketDriver.emit('authentication', {username: "yoanr@symbiofi.com"});
+        socketDriver.on('authenticated', function () {
+            console.log("authenticated !!!");
+        });
+        socketDriver.on('unauthorized', function (err) {
+            console.log("unauthorized");
+        });
+        socketDriver.on('rr', function (rr) {
+            var cc = Math.round(60000 / rr) + ' bpm';
+            $("#fc-live").html(cc);
+            if (rrList == "") {
+                rrList = rr;
+                ccList = cc;
+            } else {
+                rrList = rrList + "," + rr;
+                ccList = ccList + "," + cc;
+            }
+            if (rrList.split(","))
+                var tab = rrList.split(",");
+            var rrSum = 0;
+            for (i in tab) {
+                rrSum += parseInt(tab[i]);
+            }
+            $("#fcmin-live").html("Min : " + (Math.round(60000 / Math.max.apply(null, tab))) + ' bpm');
+            $("#fcmax-live").html("Max : " + (Math.round(60000 / Math.min.apply(null, tab))) + ' bpm');
+            $("#fcmoy-live").html("Moy : " + Math.round(60000 / (rrSum / tab.length)) + ' bpm');
+            setTachoData();
+        });
         });
     }
 
