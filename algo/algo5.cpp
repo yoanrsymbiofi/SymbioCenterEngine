@@ -75,7 +75,6 @@ int main(int argc, char *argv[]){
     time_t t0 = clock();
 
     cout << "{\"test\":\"123456789\",";
-    cout << "\"tacho\":[";
 
     //Transformation rr -> tacho
     vector<string> rrTab;
@@ -140,8 +139,9 @@ int main(int argc, char *argv[]){
         yA=yB;
         it++;
 	}
-
+    cout << "\"tacho\":[";
 	coutTacho(finalTachoMap);
+    cout << "],";
 
 	//Fenêtre glissante ex: 40 dernières secondes
     it = tachoMap.begin();
@@ -151,28 +151,28 @@ int main(int argc, char *argv[]){
         time=it->first;
         it++;
     }
-    map<int,float> finalTachoSlidedMap;
-    currentX=0;
+    map<int,float> tachoSlidedMap;
     int window=40000;
     if(time > window){
         int start = time-window;
-        it = finalTachoMap.begin();
-        while(it != finalTachoMap.end())
+        it = tachoMap.begin();
+        while(it != tachoMap.end())
         {
             if(it->first >= start){
-                finalTachoSlidedMap.insert(std::make_pair(currentX, it->second));
-                currentX+=freq;
+                tachoSlidedMap.insert(std::make_pair(it->first, it->second));
             }
             it++;
         }
     }else{
-        finalTachoSlidedMap=tachoMap;
+        tachoSlidedMap=tachoMap;
     }
 
-//    coutTacho(finalTachoSlidedMap);
+    cout << "\"tachoCC\":[";
+	coutTacho(tachoSlidedMap);
+    cout << "],";
 
     //Détection des pics
-    it = tachoMap.begin();
+    it = tachoSlidedMap.begin();
     float yMax=0;
     int xMax=0;
     float yMax2=0;
@@ -183,8 +183,10 @@ int main(int argc, char *argv[]){
     bool insertFirstPic = true;
     int precMaxPic=0;
     int countPics=0;
-    int total=0;
-    while(it != tachoMap.end()){
+    int firstPic=0;
+    int lastPic=0;
+    string totalTest="";
+    while(it != tachoSlidedMap.end()){
         if(first){
             first=false;
             yMax=it->second;
@@ -197,18 +199,26 @@ int main(int argc, char *argv[]){
                     insertFirstPic=false;
                 }
             }
+
             if(yMax < it->second){
                 tmp=0;
+                insertFirstPic=true;
             }else{
                 tmp++;
             }
+
             if(tmp==2){
                 if(insertFirstPic == true){
-                    if(precMaxPic > 0){
-                        total+=(xMax2 - precMaxPic);
-                        countPics++;
+                    //if(precMaxPic > 0){
+                        //total+=(xMax2 - precMaxPic);
+                    totalTest=totalTest + "," + to_string(xMax2);
+                    lastPic=xMax2;
+                    countPics++;
+                    //}
+                    if(firstPic==0){
+                       firstPic=xMax2;
                     }
-                    precMaxPic=xMax2;
+//                    precMaxPic=xMax2;
                 }
                 insertFirstPic=true;
             }
@@ -220,19 +230,22 @@ int main(int argc, char *argv[]){
         it++;
     }
 
-
     //Calcul CC
     int cc = 0;
-    if(countPics>0){
-        float avg = total/countPics;
+    int nbInterval= countPics-1;
+    int total=lastPic-firstPic;
+    if(countPics>1){
+        float avg = total/nbInterval;
         if(avg > 10000){
             avg = 10000-(avg-10000);
         }
         cc = round(avg/100);
     }
 
-    cout << "],";
     cout << "\"cc\":" << cc << ",";
+    cout << "\"countPics\":" << countPics << ",";
+    cout << "\"total\":" << total << ",";
+    cout << "\"totalTest\":" << "\"-" << totalTest << "\"" << ",";
     cout << "\"time\":" << (clock()-t0) << "";
 	cout << "}";
 

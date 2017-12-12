@@ -22,23 +22,22 @@
     });
 
     chartTacho.render();
-
+    
     function setTachoData() {
-        console.log(rrList);
         $.ajax({
-            url: "https://127.0.0.1/expert/calc_cc",
-//            url: "calc_cc",
+            url: "calc_cc",
             data: {
                 rr_list: rrList
             },
             success: function (data) {
-                console.log("data " + data);
+                
                 var jsonData = JSON.parse(data);
-                $("#maxBpm").html(jsonData.cc);
+                $("#maxBpm").html(jsonData.cc + " " + jsonData.countPics + " " + jsonData.total + " | " + jsonData.totalTest);
                 drawChartCC(jsonData.cc);
-                chartTacho.options.axisX.viewportMaximum = (jsonData.tacho.length * 250);
-                chartTacho.options.axisX.viewportMinimum = (chartTacho.options.axisX.viewportMaximum - 20000);
-                chartTacho.options.data[0].dataPoints = jsonData.tacho;
+                console.log(jsonData.tachoCC);
+                //chartTacho.options.axisX.viewportMaximum = (jsonData.tacho.length * 250);
+                chartTacho.options.axisX.viewportMinimum = (chartTacho.options.axisX.viewportMaximum - 30000);
+                chartTacho.options.data[0].dataPoints = jsonData.tachoCC;
                 chartTacho.render();
             }
         });
