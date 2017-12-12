@@ -1,0 +1,246 @@
+<div class="cadre" style="border-radius:10px;padding:8px;margin:5px;height:316px">
+    <h4>Respiration</h4><i id="respi-param-btn" class="param-btn glyphicon glyphicon-cog"></i>
+    <div id="chartRespi" style="width: 100%;height:260px"></div>
+</div>
+
+<div id="respi-param" title="Paramètres respiration">
+    <div id="chartRespiParam" style="height:200px"></div>
+    <hr>
+    <ul class="nav nav-pills nav-justified">
+        <li role="presentation" data-open="normal" class="active respi-menu"><a href="#">Normal</a></li>
+        <li role="presentation" data-open="advanced" class="respi-menu"><a href="#">Avancé</a></li>
+    </ul>
+    <br>
+    <div id="normal-respi">
+        <span>Cycles par minute : <b id="cpm">6</b></span><br><br>
+        <div id="sliderRespi"></div>
+        <br>
+        <div class="radio">
+            <label>
+                <input type="radio" name="optionsRespi" value="50" checked>
+                <b>Tonique </b>(inspiration 50%, expiration 50%)
+            </label>
+        </div>
+        <div class="radio">
+            <label>
+                <input type="radio" name="optionsRespi" value="40">
+                <b>Profonde </b>(inspiration 40%, expiration 60%)
+            </label>
+        </div>
+        <div class="radio disabled">
+            <label>
+                <input type="radio" name="optionsRespi" value="45">
+                <b>Basique </b>(inspiration 45%, expiration 55%)
+            </label>
+        </div>
+    </div>
+    <div id="advanced-respi" style="display:none">
+        <table class="table table-striped">
+            <tbody>
+                <tr>
+                    <td style="width:200px">Inspiration</td>
+                    <td style="width:30px"><span id="x1">4</span></td>
+                    <td style="text-align:right">
+                        <i style="cursor:pointer" class="glyphicon glyphicon-minus"></i>
+                        <i style="cursor:pointer" class="glyphicon glyphicon-plus"></i>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Pause inspiration</td>
+                    <td><span id="x2">1</span></td>
+                    <td style="text-align:right">
+                        <i style="cursor:pointer" class="glyphicon glyphicon-minus"></i>
+                        <i style="cursor:pointer" class="glyphicon glyphicon-plus"></i>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Expiration</td>
+                    <td><span id="x3">4</span></td>
+                    <td style="text-align:right">
+                        <i style="cursor:pointer" class="glyphicon glyphicon-minus"></i>
+                        <i style="cursor:pointer" class="glyphicon glyphicon-plus"></i>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Pause expiration</td>
+                    <td><span id="x4">1</span></td>
+                    <td style="text-align:right">
+                        <i style="cursor:pointer" class="glyphicon glyphicon-minus"></i>
+                        <i style="cursor:pointer" class="glyphicon glyphicon-plus"></i>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+
+    var chartRespi = new CanvasJS.Chart("chartRespi", {
+        title: {
+            text: "Inspirer"
+        },
+        axisY: {
+            suffix: " %",
+            maximum: 100,
+            minimum: 0
+        },
+        data: [{
+                type: "column",
+                dataPoints: [
+                    {label: " ", y: 0}
+                ]
+            }]
+    });
+    chartRespi.render();
+
+    $(".glyphicon-minus").click(function () {
+        var val = parseFloat($(this).parent().parent().find("span").html()).toFixed(1);
+        val = parseFloat(val - 0.1).toFixed(1);
+        if (val >= 0)
+            $(this).parent().parent().find("span").html(val);
+        initChartRespiParam();
+    });
+
+    $(".glyphicon-plus").click(function () {
+        var val = parseFloat($(this).parent().parent().find("span").html()).toFixed(1);
+        val = parseFloat(val) + 0.1;
+        val = parseFloat(val + 0.1).toFixed(1);
+        if (val <= 10)
+            $(this).parent().parent().find("span").html(val);
+
+        initChartRespiParam();
+    });
+
+    var advanced = 0;
+    var dialog = $("#respi-param").dialog({
+        autoOpen: false,
+        resizable: false,
+        height: 600,
+        width: 410,
+        modal: true,
+        buttons: {
+            "Enregistrer": function () {
+                $(this).dialog("close");
+            },
+            "Annuler": function () {
+                $(this).dialog("close");
+            }
+        }
+    });
+
+
+    $(".respi-menu").click(function () {
+        $(".respi-menu").removeClass("active");
+        $(this).addClass("active");
+
+
+        if ($(this).attr("data-open") == "advanced") {
+            advanced = 1;
+            $("#normal-respi").hide();
+            $("#advanced-respi").show();
+        } else {
+            advanced = 0;
+            $("#normal-respi").show();
+            $("#advanced-respi").hide();
+        }
+        initChartRespiParam();
+    });
+
+    $("#respi-param-btn").click(function () {
+        dialog.dialog("open");
+    });
+
+    $("#sliderRespi").slider({
+        value: 6,
+        min: 4,
+        max: 12,
+        step: 1,
+        slide: function (event, ui) {
+            $("#cpm").html(ui.value);
+            initChartRespiParam();
+        }
+    });
+
+    $('input[name=optionsRespi]').change(function () {
+        initChartRespiParam();
+    });
+
+    var chartRespiParam = new CanvasJS.Chart("chartRespiParam", {
+        theme: "light2",
+        animationEnabled: true,
+        zoomEnabled: true,
+        height: 180,
+        width: 375,
+        axisY: {
+            suffix: " %",
+            maximum: 100,
+            minimum: 0
+        },
+        data: [{
+                type: "line",
+                dataPoints: [{y: 460},
+                    {y: 450},
+                    {y: 500},
+                    {y: 480},
+                    {y: 480}]
+            }]
+    });
+
+    function initChartRespiParam() {
+        var dataPoints;
+        if (advanced == 0) {
+            var cpm = parseInt($("#sliderRespi").slider("option", "value"));
+            var cpm = parseInt($("#cpm").html());
+            var option = parseInt($('input[name=optionsRespi]:checked').val()) / 100;
+            dataPoints = [
+                {x: 0, y: 0},
+                {x: (Math.round(60 / cpm * option * 10) / 10), y: 100},
+                {x: (Math.round(60 / cpm * 10) / 10), y: 0}
+            ];
+        } else {
+            var x1 = parseFloat($("#x1").html());
+            var x2 = x1 + parseFloat($("#x2").html());
+            var x3 = x2 + parseFloat($("#x3").html());
+            var x4 = x3 + parseFloat($("#x4").html());
+            dataPoints = [
+                {x: 0, y: 0},
+                {x: x1, y: 100},
+                {x: x2, y: 100},
+                {x: x3, y: 0},
+                {x: x4, y: 0},
+            ];
+            console.log(dataPoints);
+        }
+        chartRespiParam.options.data[0].dataPoints = dataPoints;
+        chartRespiParam.render();
+    }
+
+
+    var periode = 60 / freq * 1000;
+    var miPeriode = periode / 2;
+    var respi = 0;
+    function initRespi() {
+        periode = 60 / freq * 1000;
+        miPeriode = periode / 2;
+        console.log(periode);
+        respi = 0;
+    }
+
+    function setRespi(time) {
+        var time2 = (time % periode);
+        if (time2 < miPeriode) {
+            respi = time2 * 100 / miPeriode;
+            chartRespi.options.title.text = "Inspirer";
+        } else {
+            chartRespi.options.title.text = "Expirer";
+            respi = 100 - ((time2 - miPeriode) * 100 / miPeriode);
+        }
+        chartRespi.options.data[0].dataPoints = [
+            {label: " ", y: respi}
+        ];
+        chartRespi.render();
+    }
+
+    initChartRespiParam();
+
+</script>

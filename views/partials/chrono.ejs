@@ -1,0 +1,128 @@
+<div class="cadre" style="border-radius:10px;padding:8px;margin:5px;height:316px;text-align: center;">
+    <span id="chrono-remaining-time" style="font-size:60px"></span>
+    <br>
+    <img id="chrono-start-button" src="img/start.png" style="width:150px">
+    <img id="chrono-pause-button" src="img/pause.png" style="width:150px;display:none">
+</div>
+<script>
+    var duration = 3 * 60;
+    var remainingTime = duration;
+    var time = 0;
+    var freq = 6;
+    var start = 0;
+    var end = 0;
+    var diff = 0;
+    var timerID = 0;
+    var pauseStartTime;
+    var pauseEndTime;
+    var pause = 0;
+    var socketDriver;
+
+    $("#chrono-remaining-time").html(getMinutes(remainingTime) + ":" + getSeconds(remainingTime));
+
+    $("#chrono-start-button").click(function () {
+        chronoStart();
+    });
+
+    $("#chrono-pause-button").click(function () {
+        pauseStartTime = new Date();
+        pause = 0;
+        chronoStop();
+    });
+
+    $(".freq-button").click(function () {
+        freq = $(this).attr('data-freq');
+        initRespi();
+    });
+
+    var start;
+    function chronoStart() {
+        if (pause == 1) {
+            pauseEndTime = new Date();
+            pauseDuration = pauseEndTime - pauseStartTime;
+            pauseDuration = new Date(pauseDuration);
+            start.setTime(start.getTime() + pauseDuration.getTime());
+        } else {
+            start = new Date();
+        }
+
+        firstRR = true;
+        $("#rr-area").val("");
+        $("#chrono-start-button").hide();
+        $("#chrono-pause-button").show();
+        chrono();
+        startReception();
+    }
+    function chronoStop() {
+        $("#chrono-start-button").show();
+        $("#chrono-pause-button").hide();
+        pause = 1;
+        stopReception();
+        clearTimeout(timerID);
+    }
+
+    function chrono() {
+        end = new Date();
+        diff = end - start;
+        diff = new Date(diff);
+        time = (diff.getMinutes() * 60 * 1000) + (diff.getSeconds() * 1000) + diff.getMilliseconds();
+        remainingTime = duration - Math.round(time / 1000);
+        if (remainingTime >= 0) {
+            $("#chrono-remaining-time").html(getMinutes(remainingTime) + ":" + getSeconds(remainingTime));
+            setRespi(time);
+            timerID = setTimeout(chrono, 50);
+        } else {
+            chronoStop();
+        }
+    }
+
+    function getSeconds(remainingTime) {
+        var sec = remainingTime % 60;
+        if (sec < 10)
+            return "0" + sec;
+        return "" + sec;
+    }
+
+    function getMinutes(remainingTime) {
+        return "0" + Math.floor(remainingTime / 60);
+    }
+
+    function startReception() {
+        socketDriver = io.connect('http://localhost:8080');
+        socketDriver.on('connect', function () {
+            socketDriver.emit('authentication', {username: "yoanr@symbiofi.com"});
+            socketDriver.on('authenticated', function () {
+                console.log("authenticated !!!");
+            });
+            socketDriver.on('unauthorized', function (err) {
+                console.log("unauthorized");
+            });
+            socketDriver.on('rr', function (rr) {
+                var cc = Math.round(60000 / rr) + ' bpm';
+                $("#fc-live").html(cc);
+                if (rrList == "") {
+                    rrList = rr;
+                    ccList = cc;
+                } else {
+                    rrList = rrList + "," + rr;
+                    ccList = ccList + "," + cc;
+                }
+                if (rrList.split(","))
+                    var tab = rrList.split(",");
+                    var rrSum = 0;
+                for (i in tab) {
+                    rrSum += parseInt(tab[i]);
+                }
+                $("#fcmin-live").html("Min : " + (Math.round(60000 / Math.max.apply(null, tab))) + ' bpm');
+                $("#fcmax-live").html("Max : " + (Math.round(60000 / Math.min.apply(null, tab))) + ' bpm');
+                $("#fcmoy-live").html("Moy : " + Math.round(60000 / (rrSum / tab.length)) + ' bpm');
+
+                setTachoData();
+            });
+        });
+    }
+
+    function stopReception() {
+        socketDriver.disconnect();
+    }
+</script>

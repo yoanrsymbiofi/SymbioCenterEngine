@@ -1,0 +1,42 @@
+<div class="cadre" style="text-align:center;border-radius:10px;padding:8px;margin:5px;height:316px;">
+    <h5>Cohérence Cardiaque Instantannée</h5>
+    <div id="chartInstantCC" ></div>
+</div>
+<script>
+
+    var chartInstantCC;
+    var dataInstantCC;
+    var optionsInstantCC;
+
+    google.charts.load('current', {'packages': ['gauge']});
+    google.charts.setOnLoadCallback(initChartInstantCC);
+
+    function initChartInstantCC() {
+        dataInstantCC = google.visualization.arrayToDataTable([
+            ['Label', 'Value'],
+            ['', 80]
+        ]);
+
+        optionsInstantCC = {
+            height: 300,
+            redFrom: 0, redTo: 60,
+            yellowFrom: 60, yellowTo: 90,
+            greenFrom: 90, greenTo: 100,
+            animation: {
+                duration: 1000,
+                easing: 'in'
+            }
+        };
+
+        chartInstantCC = new google.visualization.Gauge(document.getElementById('chartInstantCC'));
+        chartInstantCC.draw(dataInstantCC, optionsInstantCC);
+
+    }
+
+    function drawChartCC(val) {
+        dataInstantCC.setValue(0, 1, val);
+        chartInstantCC.draw(dataInstantCC, optionsInstantCC);
+    }
+
+
+</script>
