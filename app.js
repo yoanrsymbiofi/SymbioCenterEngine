@@ -77,7 +77,7 @@ sio.sockets.on('connection', function (socket) {
     });
 });
 
-//sendSignalTest();
+sendSignalTest();
 function sendSignalTest() {
     var rr = Math.floor((1050 - 850) * Math.random()) + 850;
     for (var i in userSockets["yoanr@symbiofi.com"])
