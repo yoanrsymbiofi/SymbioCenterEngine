@@ -9,22 +9,23 @@ var bodyParser = require('body-parser');
 var userSockets = [];
 var MongoClient = require("mongodb").MongoClient;
 var symbioDb;
-MongoClient.connect("mongodb://localhost/symbiocenterdb", function (error, db) {
+
+MongoClient.connect("mongodb://localhost/f55887f22c0d448bad4e3ba68d9db565", function (error, db) {
     if (error)
         console.log(error);
     symbioDb = db;
 });
 app.set('view engine', 'ejs');
-app.get('/', function (req, res) {
-    res.setHeader('Content-Type', 'text/html');
-    res.render('index.ejs', {title: "SymbioCenter Web"});
-}).get('/expert', function (req, res) {
+app.get('/expert', function (req, res) {
     res.setHeader('Content-Type', 'text/html');
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     res.render('expert.ejs', {title: "SymbioCenter Web"});
-}).get('/algo', function (req, res) {
-    child_process.exec('algo/algo3 ' + req.query.rr_list, function (error, stdout, stderr) {
+}).get('/expert/test', function (req, res) {
+    res.setHeader('Content-Type', 'text/html');
+    res.render('index.ejs', {title: "SymbioCenter Web"});
+}).get('/expert/calc_cc', function (req, res) {
+    child_process.exec('algo/algo5 ' + req.query.rr_list, function (error, stdout, stderr) {
         res.setHeader('Content-Type', 'text/html');
         res.send(stdout);
     });
@@ -37,50 +38,50 @@ require('socketio-auth')(sio, {
     disconnect: disconnect,
     timeout: 1000
 });
+
 function authenticate(socket, data, callback) {
-    symbioDb.collection("users").find({"email": data.username, "password": data.password}).toArray(function (err, user) {
+    symbioDb.collection("_User").find({"email": data.username}).toArray(function (err, user) {
         user = user[0];
-        if (data.username == "test" && data.password == "test") {
-            var user = {};
-            user.email = "test";
-            user.password = "test";
-            if (userSockets[123456789] == undefined)
-                userSockets[123456789] = [];
-            userSockets[123456789].push(socket.id);
-        } else if (err || !user) {
+        if (err || !user) {
             console.log("User not found");
             return callback(new Error("User not found"));
         } else {
             socket.client.user = user;
             console.log(socket.client.user.email + " connected");
-            if (userSockets[user._id] == undefined)
-                userSockets[user._id] = [];
-            userSockets[user._id].push(socket.id);
+            if (userSockets[user.email] == undefined)
+                userSockets[user.email] = [];
+            userSockets[user.email].push(socket.id);
+            return callback(null, true);
         }
-        return callback(null, user.password == data.password);
+        return callback(null, false);
     });
 }
 
 function disconnect(socket) {
-    console.log('disconnected');
+    if (socket.client.user != undefined) {
+        console.log(socket.client.user.email + ' disconnected');
+        for (var i in userSockets[socket.client.user.email])
+            if (userSockets[socket.client.user.email][i] == socket.id)
+                userSockets[socket.client.user.email].splice(i, 1);
+    } else {
+        console.log('Unknown disconnected');
+    }
 }
 
 sio.sockets.on('connection', function (socket) {
     socket.on("signal", function (signal) {
-//        var rr = (signal * 60 / 1000);
-        console.log(signal);
-        for (var i in userSockets[socket.client.user._id])
-            if (sio.sockets.connected[userSockets[socket.client.user._id][i]] != undefined)
-                sio.sockets.connected[userSockets[socket.client.user._id][i]].emit('rr', signal);
+        for (var i in userSockets[socket.client.user.email])
+            if (sio.sockets.connected[userSockets[socket.client.user.email][i]] != undefined)
+                sio.sockets.connected[userSockets[socket.client.user.email][i]].emit('rr', signal);
     });
 });
 
-sendSignalTest();
+//sendSignalTest();
 function sendSignalTest() {
     var rr = Math.floor((1050 - 850) * Math.random()) + 850;
-    for (var i in userSockets[123456789])
-        if (sio.sockets.connected[userSockets[123456789][i]] != undefined)
-            sio.sockets.connected[userSockets[123456789][i]].emit('rr', rr);
+    for (var i in userSockets["yoanr@symbiofi.com"])
+        if (sio.sockets.connected[userSockets["yoanr@symbiofi.com"][i]] != undefined)
+            sio.sockets.connected[userSockets["yoanr@symbiofi.com"][i]].emit('rr', rr);
     setTimeout(sendSignalTest, rr);
 }
 
