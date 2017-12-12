@@ -80,7 +80,7 @@ sio.sockets.on('connection', function (socket) {
 sendSignalTest();
 function sendSignalTest() {
     var rr = Math.floor((1050 - 850) * Math.random()) + 850;
-    console.log("yoanr@symbiofi.com send :" + signal);
+    console.log("yoanr@symbiofi.com send :" + rr);
     for (var i in userSockets["yoanr@symbiofi.com"])
         if (sio.sockets.connected[userSockets["yoanr@symbiofi.com"][i]] != undefined)
             sio.sockets.connected[userSockets["yoanr@symbiofi.com"][i]].emit('rr', rr);
