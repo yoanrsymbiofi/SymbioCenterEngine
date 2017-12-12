@@ -88,9 +88,7 @@
     }
 
     function startReception() {
-        socketDriver = io.connect('http://localhost:8080');
-        //PROD : 
-//        socketDriver = io.connect('https://www.symbiocenter.com/expert');
+        socketDriver = io.connect('http://127.0.0.1:8080');
         socketDriver.on('connect', function () {
             socketDriver.emit('authentication', {username: "yoanr@symbiofi.com"});
             socketDriver.on('authenticated', function () {
@@ -109,16 +107,20 @@
                     rrList = rrList + "," + rr;
                     ccList = ccList + "," + cc;
                 }
-                if (rrList.split(","))
+
+                try {
                     var tab = rrList.split(",");
-                var rrSum = 0;
-                for (i in tab) {
-                    rrSum += parseInt(tab[i]);
+                    var rrSum = 0;
+                    for (i in tab) {
+                        rrSum += parseInt(tab[i]);
+                    }
+                    $("#fcmin-live").html("Min : " + (Math.round(60000 / Math.max.apply(null, tab))) + ' bpm');
+                    $("#fcmax-live").html("Max : " + (Math.round(60000 / Math.min.apply(null, tab))) + ' bpm');
+                    $("#fcmoy-live").html("Moy : " + Math.round(60000 / (rrSum / tab.length)) + ' bpm');
+                    setTachoData();
+                } catch (e) {
+                    console.log("split error");
                 }
-                $("#fcmin-live").html("Min : " + (Math.round(60000 / Math.max.apply(null, tab))) + ' bpm');
-                $("#fcmax-live").html("Max : " + (Math.round(60000 / Math.min.apply(null, tab))) + ' bpm');
-                $("#fcmoy-live").html("Moy : " + Math.round(60000 / (rrSum / tab.length)) + ' bpm');
-                setTachoData();
             });
         });
     }
