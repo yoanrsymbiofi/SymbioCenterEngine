@@ -16,15 +16,15 @@ MongoClient.connect("mongodb://localhost/f55887f22c0d448bad4e3ba68d9db565", func
     symbioDb = db;
 });
 app.set('view engine', 'ejs');
-app.get('/expert', function (req, res) {
+app.get('/', function (req, res) {
     res.setHeader('Content-Type', 'text/html');
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     res.render('expert.ejs', {title: "SymbioCenter Web"});
-}).get('/expert/test', function (req, res) {
+}).get('/test', function (req, res) {
     res.setHeader('Content-Type', 'text/html');
     res.render('index.ejs', {title: "SymbioCenter Web"});
-}).get('/expert/calc_cc', function (req, res) {
+}).get('/calc_cc', function (req, res) {
     child_process.exec('algo/algo5 ' + req.query.rr_list, function (error, stdout, stderr) {
         res.setHeader('Content-Type', 'text/html');
         res.send(stdout);
