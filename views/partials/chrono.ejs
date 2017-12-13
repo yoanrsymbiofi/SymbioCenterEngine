@@ -88,7 +88,8 @@
     }
 
     function startReception() {
-        socketDriver = io.connect('http://127.0.0.1:8080');
+        socketDriver = io.connect('https://www.symbiocenter.com', {resource: '/expert/socket.io'});
+//        socketDriver = io.connect('http://localhost:8080');
         socketDriver.on('connect', function () {
             socketDriver.emit('authentication', {username: "yoanr@symbiofi.com"});
             socketDriver.on('authenticated', function () {

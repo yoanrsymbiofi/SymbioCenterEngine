@@ -152,7 +152,7 @@ int main(int argc, char *argv[]){
         it++;
     }
     map<int,float> tachoSlidedMap;
-    int window=40000;
+    int window=30000;
     if(time > window){
         int start = time-window;
         it = tachoMap.begin();

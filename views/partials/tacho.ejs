@@ -37,7 +37,7 @@
                 console.log(jsonData.tachoCC);
                 //chartTacho.options.axisX.viewportMaximum = (jsonData.tacho.length * 250);
                 chartTacho.options.axisX.viewportMinimum = (chartTacho.options.axisX.viewportMaximum - 30000);
-                chartTacho.options.data[0].dataPoints = jsonData.tachoCC;
+                chartTacho.options.data[0].dataPoints = jsonData.tacho;
                 chartTacho.render();
             }
         });

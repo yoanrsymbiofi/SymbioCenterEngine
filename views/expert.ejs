@@ -9,7 +9,8 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
         <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
-        <script src="http://127.0.0.1:8080/socket.io/socket.io.js"></script>
+        <script src="https://www.symbiocenter.com/expert/socket.io/socket.io.js"></script>
+        <!--<script src="http://localhost:8080/socket.io/socket.io.js"></script>-->
         <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
         <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     </head>
@@ -33,7 +34,24 @@
                 <div class="col-md-9 expert-element" id="tacho-div">
                     <%- include partials/tacho.ejs %>
                 </div>
+                <div>
+                    <button id="send_signal">Envoyer un signal</button>
+                </div>
             </div>
         </div>
+        <script>
+            $("#send_signal").click(function () {
+                $.ajax({
+                    url: "http://localhost:8080/send_signal",
+                    data: {
+                        username: "ymouster@symbiofi.com",
+                        signal: 123456
+                    },
+                    success: function (data) {
+                        console.log(data);
+                    }
+                });
+            });
+        </script>
     </body>
 </html>

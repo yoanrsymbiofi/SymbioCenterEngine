@@ -29,6 +29,15 @@ app.get('/', function (req, res) {
         res.setHeader('Content-Type', 'text/html');
         res.send(stdout);
     });
+}).get('/send_signal', function (req, res) {
+    var username = req.param("username");
+    var rr = req.param("signal");
+    console.log(username + " send: " + rr);
+    for (var i in userSockets[username])
+        if (sio.sockets.connected[userSockets[username][i]] != undefined)
+            sio.sockets.connected[userSockets[username][i]].emit('rr', rr);
+    res.setHeader('Content-Type', 'text/html');
+    res.send("ok");
 }).use(function (req, res, next) {
     res.setHeader('Content-Type', 'text/plain');
     res.status(404).send('Page introuvable !');
