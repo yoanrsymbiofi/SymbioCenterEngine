@@ -28,7 +28,17 @@ app.get('/', function (req, res) {
     sliding_time = 30000;
     if (req.query.sliding_time != undefined)
         sliding_time = req.query.sliding_time;
+    console.log("sliding_time " + sliding_time);
     child_process.exec('algo/algo5 ' + req.query.rr_list + " " + sliding_time, function (error, stdout, stderr) {
+        res.setHeader('Content-Type', 'text/html');
+        res.send(stdout);
+    });
+}).get('/calc_cc2', function (req, res) {
+    sliding_time = 30000;
+    if (req.query.sliding_time != undefined)
+        sliding_time = req.query.sliding_time;
+    console.log("sliding_time " + sliding_time);
+    child_process.exec('algo/algo6 ' + req.query.rr_list + " " + sliding_time, function (error, stdout, stderr) {
         res.setHeader('Content-Type', 'text/html');
         res.send(stdout);
     });

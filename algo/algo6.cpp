@@ -75,8 +75,6 @@ int main(int argc, char *argv[]){
     int slidingTime=stoi(argv[2]);
     time_t t0 = clock();
 
-    cout << "{\"test\":\"123456789\",";
-
     //Transformation rr -> tacho
     vector<string> rrTab;
     int nbRrTab = split(rrTab, argv[1], ',');
@@ -140,9 +138,6 @@ int main(int argc, char *argv[]){
         yA=yB;
         it++;
 	}
-    cout << "\"tacho\":[";
-	coutTacho(finalTachoMap);
-    cout << "],";
 
 	//Fenêtre glissante ex: 40 dernières secondes
     it = tachoMap.begin();
@@ -167,10 +162,6 @@ int main(int argc, char *argv[]){
     }else{
         tachoSlidedMap=tachoMap;
     }
-
-    cout << "\"tachoCC\":[";
-	coutTacho(tachoSlidedMap);
-    cout << "],";
 
     //Détection des pics
     it = tachoSlidedMap.begin();
@@ -252,11 +243,7 @@ int main(int argc, char *argv[]){
         cc = round(avg/100);
     }
 
-    cout << "\"intervals\":\"" << intervals << "\",";
-    cout << "\"cc\":" << cc << ",";
-    cout << "\"avg\":" << tachoAvg(tachoSlidedMap) << ",";
-    cout << "\"time\":" << (clock()-t0) << "";
-	cout << "}";
+	cout << cc;
 
     return 0;
 }
