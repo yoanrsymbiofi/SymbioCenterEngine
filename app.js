@@ -25,7 +25,10 @@ app.get('/', function (req, res) {
     res.setHeader('Content-Type', 'text/html');
     res.render('index.ejs', {title: "SymbioCenter Web"});
 }).get('/calc_cc', function (req, res) {
-    child_process.exec('algo/algo5 ' + req.query.rr_list, function (error, stdout, stderr) {
+    sliding_time = 30000;
+    if (req.query.sliding_time != undefined)
+        sliding_time = req.query.sliding_time;
+    child_process.exec('algo/algo5 ' + req.query.rr_list + " " + sliding_time, function (error, stdout, stderr) {
         res.setHeader('Content-Type', 'text/html');
         res.send(stdout);
     });
@@ -38,6 +41,9 @@ app.get('/', function (req, res) {
             sio.sockets.connected[userSockets[username][i]].emit('rr', rr);
     res.setHeader('Content-Type', 'text/html');
     res.send("ok");
+}).get('/calcul_coherence', function (req, res) {
+    res.setHeader('Content-Type', 'text/html');
+    res.render('calcul_coherence.ejs', {title: "SymbioCenter Web"});
 }).use(function (req, res, next) {
     res.setHeader('Content-Type', 'text/plain');
     res.status(404).send('Page introuvable !');

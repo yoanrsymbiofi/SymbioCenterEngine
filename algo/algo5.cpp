@@ -72,6 +72,7 @@ time_t getTime(){
 
 int main(int argc, char *argv[]){
 
+    int slidingTime=stoi(argv[2]);
     time_t t0 = clock();
 
     cout << "{\"test\":\"123456789\",";
@@ -152,7 +153,7 @@ int main(int argc, char *argv[]){
         it++;
     }
     map<int,float> tachoSlidedMap;
-    int window=30000;
+    int window=slidingTime;
     if(time > window){
         int start = time-window;
         it = tachoMap.begin();
@@ -173,6 +174,7 @@ int main(int argc, char *argv[]){
 
     //Détection des pics
     it = tachoSlidedMap.begin();
+    vector<int> picTab;
     float yMax=0;
     int xMax=0;
     float yMax2=0;
@@ -181,11 +183,6 @@ int main(int argc, char *argv[]){
     bool first=true;
     bool second = true;
     bool insertFirstPic = true;
-    int precMaxPic=0;
-    int countPics=0;
-    int firstPic=0;
-    int lastPic=0;
-    string totalTest="";
     while(it != tachoSlidedMap.end()){
         if(first){
             first=false;
@@ -209,16 +206,7 @@ int main(int argc, char *argv[]){
 
             if(tmp==2){
                 if(insertFirstPic == true){
-                    //if(precMaxPic > 0){
-                        //total+=(xMax2 - precMaxPic);
-                    totalTest=totalTest + "," + to_string(xMax2);
-                    lastPic=xMax2;
-                    countPics++;
-                    //}
-                    if(firstPic==0){
-                       firstPic=xMax2;
-                    }
-//                    precMaxPic=xMax2;
+                    picTab.push_back(xMax2);
                 }
                 insertFirstPic=true;
             }
@@ -231,21 +219,41 @@ int main(int argc, char *argv[]){
     }
 
     //Calcul CC
+    vector<int> ecartTab;
+    int precPic=0;
+    int ecart=0;
+    first = true;
     int cc = 0;
-    int nbInterval= countPics-1;
-    int total=lastPic-firstPic;
-    if(countPics>1){
-        float avg = total/nbInterval;
-        if(avg > 10000){
-            avg = 10000-(avg-10000);
+    int totalEcart=0;
+    int countEcart=0;
+    string intervals="";
+    for(int i(0); i<picTab.size(); ++i){
+        if(first){
+            first=false;
         }
+        else{
+            ecart=picTab[i]-precPic;
+            //if(ecart < 20000){
+                if(ecart > 10000){
+                    ecart=10000-(ecart-10000);
+                }
+                stringstream ss;
+                ss << ecart;
+                string str = ss.str();
+                intervals=intervals + str + "-";
+                totalEcart+=ecart;
+                countEcart++;
+            //}
+        }
+        precPic=picTab[i];
+    }
+    if(countEcart>0){
+        int avg=totalEcart/countEcart;
         cc = round(avg/100);
     }
 
+    cout << "\"intervals\":\"" << intervals << "\",";
     cout << "\"cc\":" << cc << ",";
-    cout << "\"countPics\":" << countPics << ",";
-    cout << "\"total\":" << total << ",";
-    cout << "\"totalTest\":" << "\"-" << totalTest << "\"" << ",";
     cout << "\"time\":" << (clock()-t0) << "";
 	cout << "}";
 

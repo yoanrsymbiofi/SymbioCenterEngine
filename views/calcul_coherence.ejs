@@ -1,0 +1,96 @@
+<!DOCTYPE HTML>
+<html>
+    <head>  
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+    </head>
+    <body>
+        <div class="container">
+
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="form-group">
+                        <textarea class="form-control" id="rrList" style="height:300px"></textarea>
+                    </div>
+                    <button id="sendBtn" class="btn btn-default">Calculer</button>
+                    <button id="deleteBtn" class="btn btn-default">Vider</button>
+                </div>
+                <div class="col-md-4">
+                    <div class="row" id="result" style="font-size:100px">
+                        0 %
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="cadre" style="border-radius:10px;padding:8px;margin:5px">
+                    <h4>Tachogramme</h4>
+                    <div id="chartTacho" style="width: 100%;height:260px"></div>
+                    <textarea class="form-control" id="maxBpm"></textarea>
+                </div>
+            </div>
+        </div>
+        <script>
+            $("#deleteBtn").click(function () {
+                $("#rrList").val("");
+                return false;
+            });
+
+            $("#sendBtn").click(function () {
+
+                var tab = $("#rrList").val().split("\n");
+                var rrStr = "";
+                var first = true;
+                if (tab.length > 1) {
+                    var rrTab;
+                    for (i in tab) {
+                        rrTab = tab[i].split("\t");
+                        if (first)
+                            first = false;
+                        else
+                            rrStr += rrTab[1] + ",";
+                    }
+                    rrStr = rrStr.substring(0, rrStr.length - 1);
+                } else {
+                    rrStr = $("#rrList").val();
+                }
+
+                $.ajax({
+                    url: "calc_cc",
+                    data: {
+                        rr_list: rrStr,
+                        sliding_time: 300000
+                    },
+                    success: function (data) {
+                        var result = JSON.parse(data);
+                        console.log(result.cc);
+                        $("#result").html(result.cc + " %");
+                        chartTacho.options.data[0].dataPoints = result.tachoCC;
+                        chartTacho.render();
+                        $("#maxBpm").html(result.intervals);
+                    }
+                });
+                
+                return false;
+            });
+
+            var chartTacho = new CanvasJS.Chart("chartTacho", {
+                theme: "light2",
+                animationEnabled: true,
+                zoomEnabled: true,
+                axisY: {
+                    includeZero: false
+                },
+                axisX: {
+                },
+                data: [{
+                        type: "line",
+                        dataPoints: []
+                    }]
+            });
+
+        </script>
+    </body>
+</html>
