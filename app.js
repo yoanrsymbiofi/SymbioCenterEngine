@@ -16,6 +16,7 @@ MongoClient.connect("mongodb://localhost/f55887f22c0d448bad4e3ba68d9db565", func
     symbioDb = db;
 });
 app.set('view engine', 'ejs');
+
 app.get('/', function (req, res) {
     res.setHeader('Content-Type', 'text/html');
     res.header("Access-Control-Allow-Origin", "*");
@@ -117,6 +118,6 @@ function sendSignalTest() {
     setTimeout(sendSignalTest, rr);
 }
 
-server.listen(8080, function () {
+server.listen(8069, function () {
     console.log('listening on http://localhost:8080');
 });
