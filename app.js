@@ -9,6 +9,8 @@ var bodyParser = require('body-parser');
 var userSockets = [];
 var MongoClient = require("mongodb").MongoClient;
 var symbioDb;
+var Parse = require('parse/node');
+Parse.serverURL = 'https://www.symbiocenter.com/parse';
 
 MongoClient.connect("mongodb://localhost/f55887f22c0d448bad4e3ba68d9db565", function (error, db) {
     if (error)
@@ -25,6 +27,17 @@ app.get('/', function (req, res) {
 }).get('/test', function (req, res) {
     res.setHeader('Content-Type', 'text/html');
     res.render('index.ejs', {title: "SymbioCenter Web"});
+}).get('/login', function (req, res) {
+    res.setHeader('Content-Type', 'text/html');
+    Parse.initialize('ilYgUXld1YqqqMvfpqRk59OqXt6MAKd8jis9oLhg','bylx336ZKZ4fQYnClEQ4TrTxMmkn1BhWYK07fgkP', 'myMasterKey');
+    Parse.User.logIn('frederic.admin@gmail.com', '123456789', {
+        success: function (user) {
+            res.send("ok");
+        },
+        error: function (user, error) {
+            res.send("not ok");
+        }
+    });
 }).get('/calc_cc', function (req, res) {
     sliding_time = 30000;
     if (req.query.sliding_time != undefined)
@@ -119,5 +132,5 @@ function sendSignalTest() {
 }
 
 server.listen(8069, function () {
-    console.log('listening on http://localhost:8080');
+    console.log('listening on http://localhost:8069');
 });
