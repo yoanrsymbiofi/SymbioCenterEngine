@@ -30,12 +30,12 @@ app.get('/', function (req, res) {
 }).get('/login', function (req, res) {
     res.setHeader('Content-Type', 'text/html');
     Parse.initialize('ilYgUXld1YqqqMvfpqRk59OqXt6MAKd8jis9oLhg','bylx336ZKZ4fQYnClEQ4TrTxMmkn1BhWYK07fgkP', 'myMasterKey');
-    Parse.User.logIn('frederic.admin@gmail.com', '123456789', {
+    Parse.User.logIn(req.query.username, req.query.password, {
         success: function (user) {
             res.send("ok");
         },
         error: function (user, error) {
-            res.send("not ok");
+            res.send(error);
         }
     });
 }).get('/calc_cc', function (req, res) {
@@ -131,6 +131,6 @@ function sendSignalTest() {
     setTimeout(sendSignalTest, rr);
 }
 
-server.listen(8069, function () {
+server.listen(8080, function () {
     console.log('listening on http://localhost:8069');
 });
