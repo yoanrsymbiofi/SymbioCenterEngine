@@ -11,7 +11,7 @@
 
 using namespace std;
 
-//Recois une liste de RR et retourne un tacho rééchantillonné, un score de cc,
+//Fonction split
 int split(vector<string>& vecteur, string chaine, char separateur)
 {
 	vecteur.clear();
@@ -26,14 +26,15 @@ int split(vector<string>& vecteur, string chaine, char separateur)
 	return vecteur.size();
 }
 
+//Calcul de A et B de l'équation Y=aX + b de la droite passant les points (bpm) (xA, yA) et (xB,yB)
 float calcA(float xA, float xB, float yA, float yB){
     return (yB-yA)/(xB-xA);
 }
-
 float calcB(float xA, float yA, float a){
     return yA-(a*xA);
 }
 
+//Affichage du tacho passer en paramètre
 void coutTacho(map<int,float> tachoMap){
     bool last = false;
     std::map<int, float>::iterator it = tachoMap.begin();
@@ -51,6 +52,7 @@ void coutTacho(map<int,float> tachoMap){
     }
 }
 
+//Calcul de la moyenne du tacho
 float tachoAvg(map<int,float> tachoMap){
     float total=0;
     int count=0;
@@ -66,10 +68,12 @@ float tachoAvg(map<int,float> tachoMap){
     return (total / count);
 }
 
+//Retourne l'heure actuelle
 time_t getTime(){
     return time(NULL);
 }
 
+//Fonction d'entrée dans le programme
 int main(int argc, char *argv[]){
 
     int slidingTime=stoi(argv[2]);

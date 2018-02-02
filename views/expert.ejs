@@ -39,19 +39,5 @@
                 </div>
             </div>
         </div>
-        <script>
-            $("#send_signal").click(function () {
-                $.ajax({
-                    url: "send_signal",
-                    data: {
-                        username: "ymouster@symbiofi.com",
-                        signal: 123456
-                    },
-                    success: function (data) {
-                        console.log(data);
-                    }
-                });
-            });
-        </script>
     </body>
 </html>
