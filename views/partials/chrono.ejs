@@ -88,8 +88,8 @@
     }
 
     function startReception() {
-        socketDriver = io.connect('https://www.symbiocenter.com', {resource: '/expert/socket.io'});
-//        socketDriver = io.connect('http://localhost:8080');
+//        socketDriver = io.connect('https://www.symbiocenter.com', {resource: '/expert/socket.io'});
+        socketDriver = io.connect('http://localhost:8080');
         socketDriver.on('connect', function () {
             socketDriver.emit('authentication', {username: "yoanr@symbiofi.com", password: "0000"});
             socketDriver.on('authenticated', function () {
@@ -103,10 +103,10 @@
                 $("#fc-live").html(cc);
                 if (rrList == "") {
                     rrList = rr;
-                    ccList = cc;
+                    //ccList = cc;
                 } else {
                     rrList = rrList + "," + rr;
-                    ccList = ccList + "," + cc;
+                    //ccList = ccList + "," + cc;
                 }
 
                 try {
@@ -122,8 +122,12 @@
                 } catch (e) {
                     console.log("split error");
                 }
+                $("#rrList").html(rrList);
+                
             });
         });
+        
+        
     }
 
     function stopReception() {

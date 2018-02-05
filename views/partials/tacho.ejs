@@ -1,7 +1,11 @@
 <div class="cadre" style="border-radius:10px;padding:8px;margin:5px">
     <h4>Tachogramme</h4>
     <div id="chartTacho" style="width: 100%;height:260px"></div>
-    <div id="maxBpm">test</div>
+    <div style="display:none">
+        <div id="maxBpm"></div>
+        <div id="rrList"></div>
+        <div id="ccList"></div>
+    </div>
 </div>
 <script>
     var rrList = "";
@@ -22,7 +26,20 @@
     });
 
     chartTacho.render();
-    
+
+    function calcMoyenneCC() {
+        var list = $("#ccList").html();
+        var ccStr = list.substring(0, list.length - 1);
+        var tab = ccStr.split(",");
+        var ccSum = 0;
+        if (tab.length == 0)
+            return 0;
+        for (i in tab) {
+            ccSum += parseInt(tab[i]);
+        }
+        return Math.round(ccSum / tab.length);
+    }
+
     function setTachoData() {
         $.ajax({
             url: "calc_cc",
@@ -30,11 +47,13 @@
                 rr_list: rrList
             },
             success: function (data) {
-                
+
                 var jsonData = JSON.parse(data);
                 $("#maxBpm").html(jsonData.cc + " " + jsonData.countPics + " " + jsonData.total + " | " + jsonData.totalTest);
                 drawChartCC(jsonData.cc);
-                console.log(jsonData.tachoCC);
+                $("#ccList").html($("#ccList").html() + jsonData.cc + ",");
+                drawChartCCM(calcMoyenneCC());
+                //console.log(jsonData.tachoCC);
                 //chartTacho.options.axisX.viewportMaximum = (jsonData.tacho.length * 250);
                 chartTacho.options.axisX.viewportMinimum = (chartTacho.options.axisX.viewportMaximum - 30000);
                 chartTacho.options.data[0].dataPoints = jsonData.tacho;
